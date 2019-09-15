@@ -59,7 +59,7 @@ class AndroidApplicationPluginInterface(
             defaultProductFlavorClass.getDeclaredMethod("getVersionCode")
 
         fun findPluginInProject(project: Project, pluginId: String = APP_PLUGIN_ID) : AndroidApplicationPluginInterface? {
-            val plugin = project.plugins.findPlugin(APP_PLUGIN_ID) ?: return null
+            val plugin = project.plugins.findPlugin(pluginId) ?: return null
             val extension = Class.forName(
                 when(pluginId) {
                     (DYNAMIC_FEATURE_PLUGIN_ID) -> DYNAMIC_FEATURE_PLUGIN_CLASS_NAME
