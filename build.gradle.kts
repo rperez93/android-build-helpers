@@ -17,17 +17,22 @@ plugins {
     `maven-publish`
     kotlin("jvm") version "1.3.50"
     id("com.bmuschko.nexus") version "2.3.1"
+    id("com.gradle.build-scan") version "2.0.2"
 }
 
 group = "com.github.rperez93"
 version = "1.0.0"
+
+buildScan {
+    termsOfServiceUrl = "https://gradle.com/terms-of-service"
+    termsOfServiceAgree = "yes"
+}
 
 repositories {
     mavenCentral()
     google()
     jcenter()
 }
-
 
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
