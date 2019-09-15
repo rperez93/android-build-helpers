@@ -1,0 +1,44 @@
+
+modifyPom {
+    //noinspection GroovyAssignabilityCheck
+    project {
+        name 'Gradle Utils'
+        description 'Collection of simple Gradle utilities.'
+        url 'https://github.com/rperez93/gradle-utils'
+        inceptionYear '2019'
+
+        scm {
+            url 'https://github.com/rperez93/gradle-utils'
+            connection 'scm:https://github.com/rperez93/gradle-utils.git'
+            developerConnection 'scm:https://github.com/rperez93/gradle-utils.git'
+        }
+
+        licenses {
+            license {
+                name 'The Apache Software License, Version 2.0'
+                url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                distribution 'repo'
+            }
+        }
+
+        developers {
+            developer {
+                id 'rperez93'
+                name 'Rafael Pérez'
+                email 'perez.rafael1993@gmail.com'
+            }
+        }
+    }
+}
+
+extraArchive {
+    sources = true
+    tests = true
+    javadoc = true
+}
+
+nexus {
+    sign = true
+    repositoryUrl = 'https://oss.sonatype.org/service/local/staging/deploy/maven2'
+    snapshotRepositoryUrl = 'https://oss.sonatype.org/content/repositories/snapshots'
+}
