@@ -28,6 +28,9 @@ class PluginProperties (project: Project){
         if (file.exists()) {
             _properties.load(FileInputStream(file))
         }
+        println("gradle-utils: properties loaded")
+        println("gradle-utils: forceUseOfGitVersion $forceUseOfGitTag")
+        println("gradle-utils: buildVersionCodeLastDigit $buildVersionCodeLastDigit")
     }
 
     val forceUseOfGitTag: Boolean
@@ -37,8 +40,8 @@ class PluginProperties (project: Project){
         get() = (_properties[VERSION_CODE_LAST_DIGIT] as String?)?.toInt() ?: 1
 
     companion object {
-        const val FORCE_USE_OF_GIT = "rperez.buildForceUseOfGitVersion"
-        const val VERSION_CODE_LAST_DIGIT = "rperez.buildVersionCodeLastDigit"
+        const val FORCE_USE_OF_GIT = "gradle-utils.forceUseOfGitVersion"
+        const val VERSION_CODE_LAST_DIGIT = "gradle-utils.buildVersionCodeLastDigit"
     }
 
 }

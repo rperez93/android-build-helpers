@@ -58,26 +58,25 @@ class AndroidProjectVersionFromGitTagPlugin : Plugin<Project> {
 
         val currentDateInVersionFormat = getDateInVersionCodeFormat()
 
-        var appVersionName: String? = null
-        var appVersionCode: Int? = null
-        AndroidApplicationPluginInterface.findPluginInProject(project)?.apply {
-            versionName = if (lastTagDescription != null) {
-                versionName ?: "$lastTagDescription+$currentDateInVersionFormat"
-            } else {
-                "0.0.0"
-            }
-            versionCode = versionCode ?: (currentDateInVersionFormat + properties.buildVersionCodeLastDigit).toInt()
+        val appVersionName: String? = if (lastTagDescription != null) {
+            "$lastTagDescription+$currentDateInVersionFormat"
+        } else {
+            "0.0.0"
+        }
 
-            appVersionName = versionName
-            appVersionCode = versionCode
+        val appVersionCode: Int? = (currentDateInVersionFormat + properties.buildVersionCodeLastDigit).toInt()
+
+        AndroidApplicationPluginInterface.findPluginInProject(project)?.apply {
+            versionName = versionName ?: appVersionName
+            versionCode = versionCode ?: appVersionCode
         }
 
         AndroidApplicationPluginInterface.findPluginInProject(
             project,
             AndroidApplicationPluginInterface.DYNAMIC_FEATURE_PLUGIN_ID
         )?.apply {
-            versionName = appVersionName
-            versionCode = appVersionCode
+            versionName = versionName ?: appVersionName
+            versionCode = versionCode ?: appVersionCode
         }
 
     }
