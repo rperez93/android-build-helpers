@@ -1,4 +1,5 @@
-# Gradle Utils Plugin [![Build Status](https://travis-ci.org/rperez93/gradle-utils.svg?branch=master)]
+# Gradle Utils Plugin 
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/rperez93/gradle-utils?color=blue&label=last%20release&logo=github&logoColor=white) ![Build Status](https://travis-ci.org/rperez93/gradle-utils.svg?branch=master)
 
 
 The idea of this library is provide a set of plugins that allow easy configurations of Android gradle files.
