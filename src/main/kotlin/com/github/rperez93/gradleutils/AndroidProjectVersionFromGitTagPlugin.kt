@@ -17,6 +17,7 @@
 package com.github.rperez93.gradleutils
 
 import com.github.rperez93.gradleutils.git.GitCommands
+import com.github.rperez93.gradleutils.git.GitCommands.Companion.extractVersion
 import com.github.rperez93.gradleutils.helper.getDateInVersionCodeFormat
 import com.github.rperez93.gradleutils.reflection.AndroidApplicationPluginInterface
 import org.gradle.api.Plugin
@@ -27,43 +28,21 @@ class AndroidProjectVersionFromGitTagPlugin : Plugin<Project> {
 
     private val _gitCommands = GitCommands()
 
-
     override fun apply(project: Project) {
 
         val properties = PluginProperties(project)
-        var lastTagDescription: String? = null
 
-        try {
-
-            val lastTagId = _gitCommands.obtainLastTagId() ?: throw RuntimeException(_gitCommands.error)
-            lastTagDescription =
-                _gitCommands.getTagDescription(lastTagId) ?: throw RuntimeException(_gitCommands.error)
-
-            if (!lastTagDescription.startsWith("v")) {
-                throw RuntimeException("The last local tag  $lastTagDescription <$lastTagId> doesn't start with \"v\"")
-            }
-
-            lastTagDescription = lastTagDescription.substring(1)
-
-            val tagsInOrigin = _gitCommands.getTagsInOrigin() ?: throw RuntimeException(_gitCommands.error)
-            if (!tagsInOrigin.contains(lastTagId)) {
-                throw RuntimeException("The last local Tag $lastTagDescription <$lastTagId> is not in origin")
-            }
-
+        val lastTag: String = try {
+            _gitCommands.obtainLastTag()?.extractVersion()
         } catch (e: RuntimeException) {
             if (properties.forceUseOfGitTag) {
                 throw e
             }
-        }
+            null
+        } ?: "0.0.0"
 
         val currentDateInVersionFormat = getDateInVersionCodeFormat()
-
-        val appVersionName: String? = if (lastTagDescription != null) {
-            "$lastTagDescription+$currentDateInVersionFormat"
-        } else {
-            "0.0.0"
-        }
-
+        val appVersionName: String? = "$lastTag+${currentDateInVersionFormat}"
         val appVersionCode: Int? = (currentDateInVersionFormat + properties.buildVersionCodeLastDigit).toInt()
 
         AndroidApplicationPluginInterface.findPluginInProject(project)?.apply {

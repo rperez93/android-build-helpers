@@ -1,6 +1,6 @@
-import groovy.lang.Closure
+@file:Suppress("UnstableApiUsage")
+
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import org.gradle.kotlin.dsl.kotlin
 
 buildscript {
     repositories {
@@ -17,28 +17,25 @@ plugins {
     `maven-publish`
     kotlin("jvm") version "1.3.50"
     id("com.bmuschko.nexus") version "2.3.1"
-    id("com.gradle.build-scan") version "2.0.2"
 }
 
 group = "com.github.rperez93"
-version = "1.0.0"
+version = "1.5.0"
 
-buildScan {
-    termsOfServiceUrl = "https://gradle.com/terms-of-service"
-    termsOfServiceAgree = "yes"
-}
 
 repositories {
-    mavenCentral()
     google()
     jcenter()
 }
+
 
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
     implementation(gradleApi())
     implementation("org.jetbrains.kotlin:kotlin-reflect:1.3.50")
-    testCompile("junit", "junit", "4.12")
+    implementation("org.eclipse.jgit:org.eclipse.jgit:5.4.2.201908231537-r")
+    testImplementation("junit", "junit", "4.12")
+
 }
 
 configure<JavaPluginConvention> {
@@ -49,31 +46,42 @@ tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "1.8"
 }
 
+tasks.getByName<Jar>("jar") {
+    manifest {
+        attributes(
+            Pair("Manifest-Version", "1.0"),
+            Pair("Created-By", "Rafael Pérez")
+        )
+    }
+}
+
 publishing {
     publications {
         create<MavenPublication>("mavenJava") {
             pom {
-                name.set("My Library")
-                description.set("A concise description of my library")
-                url.set("http://www.example.com/library")
+                name.set("Gradle Utils")
+                description.set("Collection of simple Gradle utilities.")
+                url.set("https://github.com/rperez93/gradle-utils")
+                inceptionYear.set("2019")
 
                 licenses {
                     license {
                         name.set("The Apache License, Version 2.0")
                         url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
+                        distribution.set("repo")
                     }
                 }
                 developers {
                     developer {
-                        id.set("johnd")
-                        name.set("John Doe")
-                        email.set("john.doe@example.com")
+                        id.set("rperez93")
+                        name.set("Rafael Pérez")
+                        email.set("perez.rafael1993@gmail.com")
                     }
                 }
                 scm {
-                    connection.set("scm:git:git://example.com/my-library.git")
-                    developerConnection.set("scm:git:ssh://example.com/my-library.git")
-                    url.set("http://example.com/my-library/")
+                    connection.set("scm:https://github.com/rperez93/gradle-utils.git")
+                    developerConnection.set("scm:https://github.com/rperez93/gradle-utils.git")
+                    url.set("https://github.com/rperez93/gradle-utils")
                 }
             }
         }

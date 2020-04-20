@@ -16,57 +16,42 @@
 
 package com.github.rperez93.gradleutils.git
 
-import java.io.BufferedReader
-import java.io.InputStream
-import java.io.InputStreamReader
+
+import org.eclipse.jgit.lib.Constants
+import org.eclipse.jgit.storage.file.FileRepositoryBuilder
+import org.eclipse.jgit.lib.Repository
+import java.io.File
+import java.lang.RuntimeException
 
 @Suppress("MemberVisibilityCanBePrivate")
 class GitCommands {
 
-    private val _runtime = Runtime.getRuntime()
+    private val _repository: Repository by lazy {
+        val ceilDir = File(System.getProperty("user.dir"))
+                .parentFile.parentFile
 
-    var error: String? = null
-
-    fun runCommand(command: String): String? {
-        val process = _runtime.exec(command)
-        val error =
-            readFromInputStream(process.errorStream)
-        if (error != null && error.isNotEmpty()) {
-            this.error = error
-            return null
-        }
-        return readFromInputStream(process.inputStream)
+        FileRepositoryBuilder().apply {
+            findGitDir()
+            addCeilingDirectory(ceilDir)
+            isMustExist = true
+        }.build()
     }
 
-    fun obtainLastTagId() = runCommand(COMMAND_GIT_OBTAIN_LAST_TAG_ID)
-    fun getTagsInOrigin() = runCommand(COMMAND_GIT_GET_TAGS_IN_ORIGIN)
-    fun getTagDescription(tagId: String) = runCommand("$COMMAND_GIT_OBTAIN_TAG_DESCRIPTION $tagId")
+    fun obtainLastTag(): String? =
+        _repository
+            .refDatabase
+            .getRefsByPrefix(Constants.R_TAGS)
+            .lastOrNull()?.name
 
     companion object {
-        private const val COMMAND_GIT_OBTAIN_LAST_TAG_ID = "git rev-list --tags --max-count=1"
-        private const val COMMAND_GIT_GET_TAGS_IN_ORIGIN = "git ls-remote --tags origin"
-        private const val COMMAND_GIT_OBTAIN_TAG_DESCRIPTION = "git describe --tags "
-
-        private fun readFromInputStream(inputStream: InputStream): String? {
-            val bufferedReader = BufferedReader(InputStreamReader(inputStream))
-            var data: String? = null
-
-            with(bufferedReader) {
-                var line: String?
-                do {
-                    line = readLine()
-                    if (line != null) {
-                        data = if (data == null) {
-                            line
-                        } else {
-                            data + "\n" + line
-                        }
-                    }
-                } while (line != null)
-                close()
+        fun String.extractVersion(): String {
+            val lastSlashIndex = lastIndexOf("/")
+            val substr = if (lastSlashIndex > -1) substring(lastSlashIndex + 1) else this
+            return if (substr.startsWith("v")) {
+                substr.substring(1)
+            } else {
+                throw RuntimeException("The version tag should start with a \"v\"")
             }
-            return data
         }
     }
-
 }
