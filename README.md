@@ -14,10 +14,12 @@ buildscript {
          //sometimes the gradle plugin resolve the org.eclipse.jgit dependency "incomplete"
          // gets fixed putting the dependency manually in your classpath
          classpath 'org.eclipse.jgit:org.eclipse.jgit:5.4.2.201908231537-r'
-         classpath 'com.github.rperez93:gradle-utils:1.5.0'
+         classpath 'com.github.rperez93:gradle-utils:{last_version}'
      }
  }
 ```
+
+Replace `{last_version}` with the last release number
 
 ## Current Plugins
 
