@@ -41,7 +41,7 @@ class GitCommands {
         _repository
             .refDatabase
             .getRefsByPrefix(Constants.R_TAGS)
-            .lastOrNull()?.name
+            .firstOrNull()?.name
 
     companion object {
         fun String.extractVersion(): String {
