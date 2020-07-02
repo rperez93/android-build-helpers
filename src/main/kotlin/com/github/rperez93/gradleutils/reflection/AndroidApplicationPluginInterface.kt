@@ -16,61 +16,39 @@
 
 package com.github.rperez93.gradleutils.reflection
 
+import com.github.rperez93.gradleutils.reflection.impl.AndroidPlugin
+import com.github.rperez93.gradleutils.reflection.impl.AndroidPluginV4
 import org.gradle.api.Project
 
 @Suppress("MemberVisibilityCanBePrivate")
-class AndroidApplicationPluginInterface(
-    private var _defaultConfig: Any
+abstract class AndroidApplicationPluginInterface(
+    protected val project: Project,
+    protected val pluginId: String
 ) {
 
-    var versionName: String?
-        get() = defaultProductFlavorClassGetVersionNameMethod.invoke(_defaultConfig) as String?
-        set(value) {
-            defaultProductFlavorClassSetVersionNameMethod.invoke(_defaultConfig, value)
-        }
-
-    var versionCode: Int?
-        get() = defaultProductFlavorClassGetVersionCodeMethod.invoke(_defaultConfig) as Int?
-        set(value) {
-            defaultProductFlavorClassSetVersionCodeMethod.invoke(_defaultConfig, value)
-        }
+    abstract fun getVersionName(): String?
+    abstract fun setVersionName(value: String?)
+    abstract fun getVersionCode(): Int?
+    abstract fun setVersionCode(value: Int?)
 
     companion object {
-
-        const val APP_PLUGIN_ID = "com.android.application"
-        const val DYNAMIC_FEATURE_PLUGIN_ID = "com.android.dynamic-feature"
 
         const val APP_PLUGIN_CLASS_NAME = "com.android.build.gradle.AppPlugin"
         const val DYNAMIC_FEATURE_PLUGIN_CLASS_NAME = "com.android.build.gradle.DynamicFeaturePlugin"
 
-        private const val GET_EXTENSION_METHOD_NAME = "getExtension"
 
-        private val baseExtensionClass = Class.forName("com.android.build.gradle.BaseExtension")
-        private val baseExtensionClassGetDefaultConfigMethod = baseExtensionClass.getMethod("getDefaultConfig")
+        const val APP_PLUGIN_ID = "com.android.application"
+        const val DYNAMIC_FEATURE_PLUGIN_ID = "com.android.dynamic-feature"
 
-        private val defaultProductFlavorClass = Class.forName("com.android.builder.core.DefaultProductFlavor")
-        private val defaultProductFlavorClassSetVersionNameMethod =
-            defaultProductFlavorClass.getDeclaredMethod("setVersionName", String::class.java)
-        private val defaultProductFlavorClassSetVersionCodeMethod =
-            defaultProductFlavorClass.getDeclaredMethod("setVersionCode", Integer::class.java)
-        private val defaultProductFlavorClassGetVersionNameMethod =
-            defaultProductFlavorClass.getDeclaredMethod("getVersionName")
-        private val defaultProductFlavorClassGetVersionCodeMethod =
-            defaultProductFlavorClass.getDeclaredMethod("getVersionCode")
-
-        fun findPluginInProject(project: Project, pluginId: String = APP_PLUGIN_ID) : AndroidApplicationPluginInterface? {
-            val plugin = project.plugins.findPlugin(pluginId) ?: return null
-            val extension = Class.forName(
-                when(pluginId) {
-                    (DYNAMIC_FEATURE_PLUGIN_ID) -> DYNAMIC_FEATURE_PLUGIN_CLASS_NAME
-                    else -> APP_PLUGIN_CLASS_NAME
-                }
-            ).getMethod(GET_EXTENSION_METHOD_NAME).invoke(plugin)
-            return AndroidApplicationPluginInterface(
-                baseExtensionClassGetDefaultConfigMethod.invoke(
-                    extension
-                )
-            )
+        fun findPluginInProject(
+            project: Project,
+            pluginId: String = APP_PLUGIN_ID
+        ): AndroidApplicationPluginInterface? {
+            return try {
+                AndroidPlugin(project, pluginId)
+            } catch (ignored: Exception) {
+                AndroidPluginV4(project, pluginId)
+            }
         }
 
     }

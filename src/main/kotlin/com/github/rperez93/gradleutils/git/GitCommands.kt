@@ -17,9 +17,10 @@
 package com.github.rperez93.gradleutils.git
 
 
-import org.eclipse.jgit.lib.Constants
+import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder
 import org.eclipse.jgit.lib.Repository
+import org.eclipse.jgit.revwalk.RevWalk
 import java.io.File
 import java.lang.RuntimeException
 
@@ -28,7 +29,7 @@ class GitCommands {
 
     private val _repository: Repository by lazy {
         val ceilDir = File(System.getProperty("user.dir"))
-                .parentFile.parentFile
+            .parentFile.parentFile
 
         FileRepositoryBuilder().apply {
             findGitDir()
@@ -37,11 +38,33 @@ class GitCommands {
         }.build()
     }
 
-    fun obtainLastTag(): String? =
-        _repository
-            .refDatabase
-            .getRefsByPrefix(Constants.R_TAGS)
-            .firstOrNull()?.name
+    fun obtainLastTag(): String? {
+
+        println(_repository.directory)
+
+        val revWalk = RevWalk(_repository)
+
+        return Git(_repository).tagList().call().apply {
+            sortWith(
+                Comparator { ref1, ref2 ->
+
+                    val ref1Date = try {
+                        revWalk.parseTag(ref1.objectId).taggerIdent.`when`
+                    } catch (e: Exception) {
+                        revWalk.parseCommit(ref1.objectId).authorIdent.`when`
+                    }
+
+                    val ref2Date = try {
+                        revWalk.parseTag(ref2.objectId).taggerIdent.`when`
+                    } catch (e: Exception) {
+                        revWalk.parseCommit(ref2.objectId).authorIdent.`when`
+                    }
+
+                    ref1Date.compareTo(ref2Date)
+                }
+            )
+        }.lastOrNull()?.name
+    }
 
     companion object {
         fun String.extractVersion(): String {

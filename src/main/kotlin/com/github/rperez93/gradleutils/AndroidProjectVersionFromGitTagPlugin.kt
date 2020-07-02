@@ -32,30 +32,41 @@ class AndroidProjectVersionFromGitTagPlugin : Plugin<Project> {
 
         val properties = PluginProperties(project)
 
-        val lastTag: String = try {
+        val lastTag: String? = try {
             _gitCommands.obtainLastTag()?.extractVersion()
         } catch (e: RuntimeException) {
             if (properties.forceUseOfGitTag) {
                 throw e
             }
             null
-        } ?: "0.0.0"
-
-        val currentDateInVersionFormat = getDateInVersionCodeFormat()
-        val appVersionName: String? = "$lastTag+${currentDateInVersionFormat}"
-        val appVersionCode: Int? = (currentDateInVersionFormat + properties.buildVersionCodeLastDigit).toInt()
-
-        AndroidApplicationPluginInterface.findPluginInProject(project)?.apply {
-            versionName = versionName ?: appVersionName
-            versionCode = versionCode ?: appVersionCode
         }
 
-        AndroidApplicationPluginInterface.findPluginInProject(
-            project,
-            AndroidApplicationPluginInterface.DYNAMIC_FEATURE_PLUGIN_ID
-        )?.apply {
-            versionName = versionName ?: appVersionName
-            versionCode = versionCode ?: appVersionCode
+
+        if (lastTag != null) {
+            println("Version from last git tag: v${lastTag}")
+        }
+
+        val currentDateInVersionFormat = getDateInVersionCodeFormat()
+        val appVersionName: String? = if (lastTag == null) null else "$lastTag+${currentDateInVersionFormat}"
+        val appVersionCode: Int? = if (lastTag == null) null else (currentDateInVersionFormat + properties.buildVersionCodeLastDigit).toInt()
+
+
+        val plugin = when {
+            project.plugins.findPlugin(AndroidApplicationPluginInterface.APP_PLUGIN_ID) != null -> AndroidApplicationPluginInterface.findPluginInProject(project)
+            project.plugins.findPlugin(AndroidApplicationPluginInterface.DYNAMIC_FEATURE_PLUGIN_ID) != null -> {
+                AndroidApplicationPluginInterface.findPluginInProject(
+                    project,
+                    AndroidApplicationPluginInterface.DYNAMIC_FEATURE_PLUGIN_ID
+                )
+            }
+            else -> {
+                null
+            }
+        }
+
+        plugin?.apply {
+            setVersionName(appVersionName ?: getVersionName())
+            setVersionCode(appVersionCode ?: getVersionCode())
         }
 
     }
