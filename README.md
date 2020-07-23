@@ -1,5 +1,6 @@
 # Gradle Utils Plugin 
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/rperez93/gradle-utils?color=blue&label=last%20release&logo=github&logoColor=white) ![Build Status](https://travis-ci.org/rperez93/gradle-utils.svg?branch=master)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Frperez93%2Fgradle-utils.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Frperez93%2Fgradle-utils?ref=badge_shield)
 
 
 The idea of this library is provide a set of plugins that allow easy configurations of Android gradle files.
@@ -39,3 +40,7 @@ apply plugin: 'utils-version-from-git-android'
 Anyone can do a pull request, i will try to verify the pull request the more quickly i can. 
 
 Any idea or suggestion is welcome.
+
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Frperez93%2Fgradle-utils.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Frperez93%2Fgradle-utils?ref=badge_large)
