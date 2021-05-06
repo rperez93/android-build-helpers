@@ -18,21 +18,21 @@ package com.github.rperez93.gradleutils.git
 
 
 import org.eclipse.jgit.api.Git
-import org.eclipse.jgit.storage.file.FileRepositoryBuilder
 import org.eclipse.jgit.lib.Repository
 import org.eclipse.jgit.revwalk.RevWalk
+import org.eclipse.jgit.storage.file.FileRepositoryBuilder
+import org.gradle.api.Project
 import java.io.File
-import java.lang.RuntimeException
 
 @Suppress("MemberVisibilityCanBePrivate")
-class GitCommands {
+class GitCommands (private val _project: Project){
 
     private val _repository: Repository by lazy {
         val ceilDir = File(System.getProperty("user.dir"))
             .parentFile.parentFile
 
         FileRepositoryBuilder().apply {
-            findGitDir()
+            findGitDir(_project.projectDir)
             addCeilingDirectory(ceilDir)
             isMustExist = true
         }.build()

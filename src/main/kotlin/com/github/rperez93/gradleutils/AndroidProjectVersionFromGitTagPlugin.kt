@@ -26,11 +26,12 @@ import java.lang.RuntimeException
 
 class AndroidProjectVersionFromGitTagPlugin : Plugin<Project> {
 
-    private val _gitCommands = GitCommands()
+    private lateinit var _gitCommands: GitCommands
 
     override fun apply(project: Project) {
 
         val properties = PluginProperties(project)
+        _gitCommands = GitCommands(project)
 
         val lastTag: String? = try {
             _gitCommands.obtainLastTag()?.extractVersion()
