@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.rperez93.gradleutils
+package com.github.rperez93.gradleutils.helper
 
 import org.gradle.api.Project
 import java.io.FileInputStream
@@ -24,21 +24,17 @@ class PluginProperties (project: Project){
     private val _properties = Properties()
 
     init {
-        val file = project.rootProject.file("local.properties")
+        val file = project.rootProject.file("gradle-utils.properties")
         if (file.exists()) {
             _properties.load(FileInputStream(file))
         }
     }
 
-    val forceUseOfGitTag: Boolean
-        get() = (_properties[FORCE_USE_OF_GIT] as String?)?.toBoolean() ?: false
-
     val buildVersionCodeLastDigit: Int
         get() = (_properties[VERSION_CODE_LAST_DIGIT] as String?)?.toInt() ?: 1
 
     companion object {
-        const val FORCE_USE_OF_GIT = "gradle-utils.forceUseOfGitVersion"
-        const val VERSION_CODE_LAST_DIGIT = "gradle-utils.buildVersionCodeLastDigit"
+        const val VERSION_CODE_LAST_DIGIT = "buildVersionCodeLastDigit"
     }
 
 }

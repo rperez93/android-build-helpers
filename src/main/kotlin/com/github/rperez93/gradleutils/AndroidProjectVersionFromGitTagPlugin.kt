@@ -19,56 +19,56 @@ package com.github.rperez93.gradleutils
 import com.github.rperez93.gradleutils.git.GitCommands
 import com.github.rperez93.gradleutils.git.GitCommands.Companion.extractVersion
 import com.github.rperez93.gradleutils.helper.getDateInVersionCodeFormat
-import com.github.rperez93.gradleutils.reflection.AndroidApplicationPluginInterface
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import java.lang.RuntimeException
 
 class AndroidProjectVersionFromGitTagPlugin : Plugin<Project> {
 
+    companion object {
+        const val PLUGIN_EXTENSION = "projectVersionFromGitTag"
+    }
+
+    @Suppress("MemberVisibilityCanBePrivate")
+    open class VersionInfo(
+        val versionName: String?,
+        val currentDateInVersionFormat: String?
+    ) {
+
+        var versionCodeLastDigit: Int = 0
+        val versionCode: Int
+            get() {
+                if (currentDateInVersionFormat == null)
+                    return 0
+                return (currentDateInVersionFormat + versionCodeLastDigit).toInt()
+            }
+    }
+
     private lateinit var _gitCommands: GitCommands
 
     override fun apply(project: Project) {
 
-        val properties = PluginProperties(project)
         _gitCommands = GitCommands(project)
 
         val lastTag: String? = try {
             _gitCommands.obtainLastTag()?.extractVersion()
         } catch (e: RuntimeException) {
-            if (properties.forceUseOfGitTag) {
-                throw e
-            }
             null
         }
 
-
         if (lastTag != null) {
-            println("Version from last git tag: v${lastTag}")
+            println("[AppVersionFromGitTag] Version from last git tag: v${lastTag}")
         }
 
         val currentDateInVersionFormat = getDateInVersionCodeFormat()
         val appVersionName: String? = if (lastTag == null) null else "$lastTag+${currentDateInVersionFormat}"
-        val appVersionCode: Int? = if (lastTag == null) null else (currentDateInVersionFormat + properties.buildVersionCodeLastDigit).toInt()
 
+        project.
 
-        val plugin = when {
-            project.plugins.findPlugin(AndroidApplicationPluginInterface.APP_PLUGIN_ID) != null -> AndroidApplicationPluginInterface.findPluginInProject(project)
-            project.plugins.findPlugin(AndroidApplicationPluginInterface.DYNAMIC_FEATURE_PLUGIN_ID) != null -> {
-                AndroidApplicationPluginInterface.findPluginInProject(
-                    project,
-                    AndroidApplicationPluginInterface.DYNAMIC_FEATURE_PLUGIN_ID
-                )
-            }
-            else -> {
-                null
-            }
-        }
-
-        plugin?.apply {
-            setVersionName(appVersionName ?: getVersionName())
-            setVersionCode(appVersionCode ?: getVersionCode())
-        }
+        project.extensions.create(
+            PLUGIN_EXTENSION,
+            VersionInfo::class.java, appVersionName,
+            currentDateInVersionFormat)
 
     }
 

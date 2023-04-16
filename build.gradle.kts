@@ -2,48 +2,44 @@
 
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-buildscript {
-    repositories {
-        jcenter()
-    }
-    dependencies {
-        classpath("com.bmuschko:gradle-nexus-plugin:2.3.1")
+configurations.configureEach {
+    if (isCanBeConsumed)  {
+        attributes {
+            attribute(GradlePluginApiVersion.GRADLE_PLUGIN_API_VERSION_ATTRIBUTE,
+                objects.named("7.0"))
+        }
     }
 }
 
 plugins {
     java
-    maven
+    kotlin("jvm") version "1.8.20"
+    signing
     `maven-publish`
-    kotlin("jvm") version "1.3.50"
-    id("com.bmuschko.nexus") version "2.3.1"
 }
 
 group = "com.github.rperez93"
-version = "1.7"
-
+version = "2.0"
 
 repositories {
     google()
-    jcenter()
+    mavenCentral()
 }
 
 
 dependencies {
-    implementation(kotlin("stdlib-jdk8"))
     implementation(gradleApi())
     implementation("org.jetbrains.kotlin:kotlin-reflect:1.3.50")
     implementation("org.eclipse.jgit:org.eclipse.jgit:5.4.2.201908231537-r")
     testImplementation("junit", "junit", "4.12")
-
 }
 
-configure<JavaPluginConvention> {
-    sourceCompatibility = JavaVersion.VERSION_1_8
+extensions.getByType(JavaPluginExtension::class.java).apply {
+    sourceCompatibility = JavaVersion.VERSION_17
 }
 
 tasks.withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = "1.8"
+    kotlinOptions.jvmTarget = "17"
 }
 
 tasks.getByName<Jar>("jar") {
@@ -55,9 +51,16 @@ tasks.getByName<Jar>("jar") {
     }
 }
 
+java {
+    withJavadocJar()
+    withSourcesJar()
+}
+
 publishing {
     publications {
         create<MavenPublication>("mavenJava") {
+            artifactId = "gradle-utils"
+            from(components["java"])
             pom {
                 name.set("Gradle Utils")
                 description.set("Collection of simple Gradle utilities.")
@@ -86,6 +89,22 @@ publishing {
             }
         }
     }
+    repositories {
+        maven {
+            name = project.properties["nexusName"] as String
+            url = uri(project.properties["nexusURI"] as String)
+            credentials {
+                username = project.properties["nexusUsername"] as String
+                password = project.properties["nexusPassword"] as String
+            }
+        }
+        maven {
+            name = "local"
+            url = uri(layout.buildDirectory.dir("repos/releases"))
+        }
+    }
 }
 
-apply(from = "nexus.gradle")
+signing {
+    sign(publishing.publications["mavenJava"])
+}
