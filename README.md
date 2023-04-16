@@ -1,5 +1,6 @@
 # Gradle Utils Plugin 
-![GitHub release (latest by date)](https://img.shields.io/github/v/release/rperez93/gradle-utils?color=blue&label=last%20release&logo=github&logoColor=white) ![Build Status](https://travis-ci.org/rperez93/gradle-utils.svg?branch=master)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/rperez93/gradle-utils?color=blue&label=last%20release&logo=github&logoColor=white)
+[![Java CI with Gradle](https://github.com/rperez93/gradle-utils/actions/workflows/gradle.yml/badge.svg)](https://github.com/rperez93/gradle-utils/actions/workflows/gradle.yml)
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Frperez93%2Fgradle-utils.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Frperez93%2Fgradle-utils?ref=badge_shield)
 
 
