@@ -41,7 +41,7 @@ versionCode: concatenation of currentDateInVersionFormat + versionCodeLastDigit
 #### Usage
 Apply the plugin before any other build plugin. Ex: before `com.android.application` plugin
 ```groovy
-apply plugin: 'uproject-version-from-git'
+apply plugin: 'project-version-from-git'
 ```
 
 Example usage of `projectVersionFromGitTag` extension in an Android project:
