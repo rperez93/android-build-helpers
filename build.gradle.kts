@@ -31,8 +31,7 @@ repositories {
 
 dependencies {
     implementation(gradleApi())
-    implementation("org.jetbrains.kotlin:kotlin-reflect:1.3.50")
-    implementation("org.eclipse.jgit:org.eclipse.jgit:5.4.2.201908231537-r")
+    implementation("org.eclipse.jgit:org.eclipse.jgit:6.5.0.202303070854-r")
     testImplementation("junit", "junit", "4.12")
 }
 

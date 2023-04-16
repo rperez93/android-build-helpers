@@ -45,24 +45,22 @@ class GitCommands (private val _project: Project){
         val revWalk = RevWalk(_repository)
 
         return Git(_repository).tagList().call().apply {
-            sortWith(
-                Comparator { ref1, ref2 ->
+            sortWith { ref1, ref2 ->
 
-                    val ref1Date = try {
-                        revWalk.parseTag(ref1.objectId).taggerIdent.`when`
-                    } catch (e: Exception) {
-                        revWalk.parseCommit(ref1.objectId).authorIdent.`when`
-                    }
-
-                    val ref2Date = try {
-                        revWalk.parseTag(ref2.objectId).taggerIdent.`when`
-                    } catch (e: Exception) {
-                        revWalk.parseCommit(ref2.objectId).authorIdent.`when`
-                    }
-
-                    ref1Date.compareTo(ref2Date)
+                val ref1Date = try {
+                    revWalk.parseTag(ref1.objectId).taggerIdent.`when`
+                } catch (e: Exception) {
+                    revWalk.parseCommit(ref1.objectId).authorIdent.`when`
                 }
-            )
+
+                val ref2Date = try {
+                    revWalk.parseTag(ref2.objectId).taggerIdent.`when`
+                } catch (e: Exception) {
+                    revWalk.parseCommit(ref2.objectId).authorIdent.`when`
+                }
+
+                ref1Date.compareTo(ref2Date)
+            }
         }.lastOrNull()?.name
     }
 
