@@ -15,7 +15,9 @@ buildscript {
      dependencies {
          //sometimes the gradle plugin resolve the org.eclipse.jgit dependency "incomplete"
          // gets fixed putting the dependency manually in your classpath
+         // if you don't have that issue don't add the jgit classpath dependency
          classpath 'org.eclipse.jgit:org.eclipse.jgit:5.4.2.201908231537-r'
+         
          classpath 'com.github.rperez93:gradle-utils:{last_version}'
      }
  }
@@ -25,20 +27,39 @@ Replace `{last_version}` with the last release number
 
 ## Current Plugins
 
-### utils-version-from-git-android
+### project-version-from-git
 
-Get the last version tag from git and use the tag description as `versionName` for the `com.android.application` 
-plugin or the `com.android.dynamic-feature` plugin.
-
-#### Usage
-Paste the next line of code just before applying the `com.android.application` plugin 
-or the `com.android.dynamic-feature` plugin.
-```groovy
-apply plugin: 'utils-version-from-git-android'
+When this plugin is applied, it will add the `projectVersionFromGitTag` extension that contains the follow properties:
+```
+VersionName:  Extracted version from last github tag.
+currentDateInVersionFormat: current date in format YYYYMMDD.
+versionCodeLastDigit: used to complete the version code, by default is 0, it can be configured in the gradle build script.
+versionCode: concatenation of currentDateInVersionFormat + versionCodeLastDigit
 ```
 
+
+#### Usage
+Apply the plugin before any other build plugin. Ex: before `com.android.application` plugin
+```groovy
+apply plugin: 'uproject-version-from-git'
+```
+
+Example usage of `projectVersionFromGitTag` extension in an Android project:
+
+```groovy
+// Using date as versionCode and git tag as versionName
+versionCode projectVersionFromGitTag.versionCode
+versionName projectVersionFromGitTag.versionName
+```
+
+
+### utils-version-from-git-android
+
+- **Replaced by `project-version-from-git` since version 2.0**
+
+
 ## Contribute, feature request and ideas
-Anyone can do a pull request, i will try to verify the pull request the more quickly i can. 
+Anyone can do a pull request, I will try to verify the pull request the more quickly i can. 
 
 Any idea or suggestion is welcome.
 

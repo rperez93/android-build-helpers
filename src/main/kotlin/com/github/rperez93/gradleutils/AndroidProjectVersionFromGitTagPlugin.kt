@@ -63,7 +63,6 @@ class AndroidProjectVersionFromGitTagPlugin : Plugin<Project> {
         val currentDateInVersionFormat = getDateInVersionCodeFormat()
         val appVersionName: String? = if (lastTag == null) null else "$lastTag+${currentDateInVersionFormat}"
 
-        project.
 
         project.extensions.create(
             PLUGIN_EXTENSION,
