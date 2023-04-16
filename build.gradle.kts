@@ -3,10 +3,12 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 configurations.configureEach {
-    if (isCanBeConsumed)  {
+    if (isCanBeConsumed) {
         attributes {
-            attribute(GradlePluginApiVersion.GRADLE_PLUGIN_API_VERSION_ATTRIBUTE,
-                objects.named("7.0"))
+            attribute(
+                GradlePluginApiVersion.GRADLE_PLUGIN_API_VERSION_ATTRIBUTE,
+                objects.named("7.0")
+            )
         }
     }
 }
@@ -91,11 +93,14 @@ publishing {
     }
     repositories {
         maven {
-            name = project.properties["nexusName"] as String
-            url = uri(project.properties["nexusURI"] as String)
+            name = project.properties["nexusName"] as String? ?: "remote"
+            url = uri(
+                project.properties["nexusURI"] as String?
+                    ?: layout.buildDirectory.dir("repos/testRemote")
+            )
             credentials {
-                username = project.properties["nexusUsername"] as String
-                password = project.properties["nexusPassword"] as String
+                username = project.properties["nexusUsername"] as String? ?: "remote"
+                password = project.properties["nexusPassword"] as String? ?: "password"
             }
         }
         maven {
