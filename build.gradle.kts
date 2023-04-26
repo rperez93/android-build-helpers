@@ -91,9 +91,9 @@ publishing {
             }
         }
 
-        create<MavenPublication>("mavenJavaExtended") {
-            group = "com.github.rperez93.gradle-utils"
-            artifactId = "com.github.rperez93.gradle-utils.gradle.plugin"
+        create<MavenPublication>("mavenJavaIOGithub") {
+            group = "io.github.rperez93.gradle-utils"
+            artifactId = "io.github.rperez93.gradle-utils.gradle.plugin"
             from(components["java"])
             pom {
                 name.set("Gradle Utils")
@@ -125,7 +125,18 @@ publishing {
     }
     repositories {
         maven {
-            name = project.properties["nexusName"] as String? ?: "remote"
+            name = project.properties["newNexusName"] as String? ?: "remote"
+            url = uri(
+                project.properties["newNexusURI"] as String?
+                    ?: layout.buildDirectory.dir("repos/testRemote")
+            )
+            credentials {
+                username = project.properties["newNexusUsername"] as String? ?: "remote"
+                password = project.properties["newNexusPassword"] as String? ?: "password"
+            }
+        }
+        maven {
+            name = project.properties["nexusName"] as String? ?: "remoteLegacy"
             url = uri(
                 project.properties["nexusURI"] as String?
                     ?: layout.buildDirectory.dir("repos/testRemote")
@@ -144,5 +155,5 @@ publishing {
 
 signing {
     sign(publishing.publications["mavenJava"])
-    sign(publishing.publications["mavenJavaExtended"])
+    sign(publishing.publications["mavenJavaIOGithub"])
 }
