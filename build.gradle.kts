@@ -7,7 +7,7 @@ configurations.configureEach {
         attributes {
             attribute(
                 GradlePluginApiVersion.GRADLE_PLUGIN_API_VERSION_ATTRIBUTE,
-                objects.named("7.0")
+                objects.named("8.0")
             )
         }
     }
@@ -90,6 +90,38 @@ publishing {
                 }
             }
         }
+
+        create<MavenPublication>("mavenJavaExtended") {
+            group = "com.github.rperez93.gradle-utils"
+            artifactId = "com.github.rperez93.gradle-utils.gradle.plugin"
+            from(components["java"])
+            pom {
+                name.set("Gradle Utils")
+                description.set("Collection of simple Gradle utilities.")
+                url.set("https://github.com/rperez93/gradle-utils")
+                inceptionYear.set("2019")
+
+                licenses {
+                    license {
+                        name.set("The Apache License, Version 2.0")
+                        url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
+                        distribution.set("repo")
+                    }
+                }
+                developers {
+                    developer {
+                        id.set("rperez93")
+                        name.set("Rafael Pérez")
+                        email.set("perez.rafael1993@gmail.com")
+                    }
+                }
+                scm {
+                    connection.set("scm:https://github.com/rperez93/gradle-utils.git")
+                    developerConnection.set("scm:https://github.com/rperez93/gradle-utils.git")
+                    url.set("https://github.com/rperez93/gradle-utils")
+                }
+            }
+        }
     }
     repositories {
         maven {
@@ -112,4 +144,5 @@ publishing {
 
 signing {
     sign(publishing.publications["mavenJava"])
+    sign(publishing.publications["mavenJavaExtended"])
 }
